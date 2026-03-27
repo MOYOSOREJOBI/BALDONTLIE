@@ -1,7 +1,64 @@
-# BALLISLIFE
-EVERY SINGLE THING FOOTBALL:
-<img width="1768" height="908" alt="Screenshot 2026-03-03 at 09 57 32" src="https://github.com/user-attachments/assets/2a087202-2f17-4d36-a12a-0fbbe427866c" />
-<img width="1784" height="918" alt="Screenshot 2026-03-03 at 10 02 17" src="https://github.com/user-attachments/assets/0b3862c0-66cf-46e4-8562-b683b57deeeb" />
-<img width="1782" height="914" alt="Screenshot 2026-03-03 at 10 00 20" src="https://github.com/user-attachments/assets/57e37a78-9c7a-4b4f-9fa5-fab7f34e1992" />
-<img width="1783" height="882" alt="Screenshot 2026-03-02 at 21 42 07" src="https://github.com/user-attachments/assets/fa672991-619e-41eb-b550-de0e262fb9f0" />
-<img width="1761" height="905" alt="Screenshot 2026-03-03 at 10 01 55" src="https://github.com/user-attachments/assets/5abcd7ee-7750-42fa-b3c0-5d58e76fc38d" />
+# BALDONTLIE
+
+Premium football intelligence frontend with scouting, player discovery, transfers, predictions, social features, and a dedicated Games section led by `Market XI`.
+
+## Repo Layout
+
+The working application lives in `source-code/`.
+
+Important paths:
+
+- `source-code/client/` - React + Vite frontend
+- `source-code/server/` - Express server for dev and production serving
+- `source-code/shared/` - shared schema and cross-cutting code
+- `REPO_OVERVIEW.md` - detailed audit and structure document
+
+## Current Status
+
+This repository is frontend-heavy and mock-data-driven right now.
+
+What is in place:
+
+- premium dark football UI
+- multi-page product shell
+- dashboard, players, transfers, predictions, rankings, and other football product screens
+- new `Games` section
+- fully designed `Market XI` frontend simulation
+
+What is not in place yet:
+
+- real backend APIs
+- persistent database-backed product behavior
+- full auth flow
+- tests and linting
+
+## Local Development
+
+From `source-code/`:
+
+```bash
+npm install
+npm run dev
+```
+
+The app has recently been running locally at:
+
+```text
+http://127.0.0.1:5050
+```
+
+## Scripts
+
+From `source-code/package.json`:
+
+- `npm run dev`
+- `npm run build`
+- `npm run start`
+- `npm run check`
+- `npm run db:push`
+
+## Documentation
+
+For a more detailed explanation of the repo structure, strengths, weaknesses, and current state, see:
+
+- `REPO_OVERVIEW.md`
