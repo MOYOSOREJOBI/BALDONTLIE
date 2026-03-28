@@ -25,8 +25,6 @@ import {
   ChevronDown,
   Palette,
   Database,
-  BrainCircuit,
-  GraduationCap,
   Compass
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -119,11 +117,6 @@ const themes = [
   { id: "solarized", name: "Solarized Dark" },
 ];
 
-const userModes = [
-  { id: "learn", name: "Learn Mode", icon: GraduationCap, color: "text-blue-400" },
-  { id: "fan", name: "Fan Mode", icon: Heart, color: "text-red-400" },
-  { id: "scout", name: "Scout Mode", icon: BrainCircuit, color: "text-primary" },
-];
 
 function AppSidebar({ dir }: { dir: string }) {
   const [location] = useLocation();
@@ -202,8 +195,6 @@ function TopNav({
   const [location] = useLocation();
   const { toggleSidebar } = useSidebar();
   const { t, i18n } = useTranslation();
-  const [currentMode, setCurrentMode] = useState(userModes[2]); // Default Scout
-
   if (location === "/") return null;
 
   const handleLanguageChange = (lang: LocaleMeta) => {
@@ -246,35 +237,6 @@ function TopNav({
       </div>
       <div className="flex items-center gap-2 lg:gap-4 shrink-0">
         
-        {/* User Mode Toggle */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className={`hidden sm:flex items-center gap-2 border-border/50 bg-card/50 ${currentMode.color}`}
-            >
-              <currentMode.icon className="w-4 h-4" />
-              <span className="font-semibold">{currentMode.name}</span>
-              <ChevronDown className="w-3 h-3 text-muted-foreground" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 bg-card border-border">
-             <DropdownMenuLabel className="text-xs text-muted-foreground">Select Experience</DropdownMenuLabel>
-             <DropdownMenuSeparator />
-             {userModes.map((mode) => (
-                <DropdownMenuItem 
-                  key={mode.id} 
-                  className="cursor-pointer flex items-center gap-2"
-                  onClick={() => setCurrentMode(mode)}
-                >
-                  <mode.icon className={`w-4 h-4 ${mode.color}`} />
-                  <span className={currentMode.id === mode.id ? "font-bold" : ""}>{mode.name}</span>
-                </DropdownMenuItem>
-             ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
         {/* Theme Switcher */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
