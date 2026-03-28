@@ -1,0 +1,33 @@
+{
+  "mode": "mobile-webkit",
+  "route": "/dashboard",
+  "url": "http://127.0.0.1:5005/dashboard",
+  "loadingVisible": false,
+  "containsLoadingText": false,
+  "consoleMessages": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "info",
+      "text": "Successfully preconnected to https://fonts.googleapis.com/"
+    },
+    {
+      "type": "info",
+      "text": "Successfully preconnected to https://fonts.gstatic.com/"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "🌐 i18next is maintained with support from Locize — consider powering your project with managed localization (AI, CDN, integrations): https://locize.com 💙"
+    }
+  ],
+  "pageErrors": [],
+  "requestFailures": [],
+  "badResponses": [],
+  "screenshotPath": "/Users/mac/Desktop/BALDONTLIE/DOCUMENTATION_AND_RESEARCH/assets/screenshots/mobile-bug/dashboard-mobile-webkit.png"
+}

@@ -1,178 +1,556 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Filter, BookmarkPlus, Layers, Plus, Database, ChevronRight, Save } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Search,
+  Filter,
+  BookmarkPlus,
+  Plus,
+  Database,
+  Save,
+  Bell,
+  TrendingUp,
+  TrendingDown,
+  AlertCircle,
+  ChevronRight,
+  Star,
+  Clock,
+  Users,
+  Target,
+  BarChart2,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 
+const searchResults = [
+  { name: "Joao Neves", club: "Benfica", nation: "Portugal", age: 19, role: "Box-to-Box", contract: "Jun 2025", match: 98, matchColor: "text-primary" },
+  { name: "Warren Zaïre-Emery", club: "PSG", nation: "France", age: 18, role: "Box-to-Box", contract: "Jun 2026", match: 94, matchColor: "text-primary" },
+  { name: "Arthur Vermeeren", club: "Atletico Madrid", nation: "Belgium", age: 19, role: "Deep Lying", contract: "Jun 2027", match: 89, matchColor: "text-green-400" },
+  { name: "Kobbie Mainoo", club: "Man United", nation: "England", age: 19, role: "Box-to-Box", contract: "Jun 2028", match: 84, matchColor: "text-green-400" },
+  { name: "Grace Clinton", club: "Man Utd Women", nation: "England", age: 20, role: "Inv. Winger", contract: "Jun 2025", match: 79, matchColor: "text-blue-400" },
+  { name: "Yui Hasegawa", club: "Man City Women", nation: "Japan", age: 27, role: "Destroyer 6", contract: "Jun 2026", match: 76, matchColor: "text-blue-400" },
+  { name: "Pau Cubarsí", club: "Barcelona", nation: "Spain", age: 17, role: "CB / Build", contract: "Jun 2027", match: 72, matchColor: "text-yellow-400" },
+];
+
+const shortlists = [
+  {
+    name: "Summer Window Targets",
+    count: 5,
+    updated: "2 days ago",
+    accentClassName: "border-primary/30 bg-primary/10 text-primary",
+    players: [
+      { name: "Joao Neves", club: "Benfica", note: "Priority DM target — expiring deal leverage." },
+      { name: "Nico Williams", club: "Athletic Bilbao", note: "Winger profile that inverts and carries." },
+      { name: "Martin Zubimendi", club: "Real Sociedad", note: "Destroyer 6, immediate squad readiness." },
+      { name: "Grace Clinton", club: "Man Utd Women", note: "Women's window — value and upside both rising." },
+      { name: "Lamine Yamal", club: "Barcelona", note: "Long-term watch, not realistic this window." },
+    ],
+  },
+  {
+    name: "Emergency CB Cover",
+    count: 3,
+    updated: "5 days ago",
+    accentClassName: "border-yellow-500/30 bg-yellow-500/10 text-yellow-300",
+    players: [
+      { name: "Pau Cubarsí", club: "Barcelona", note: "Young but composure and reading of game is elite." },
+      { name: "Leny Yoro", club: "Lille", note: "Fee risk is high but ceiling matches the need." },
+      { name: "Murillo", club: "Nottingham Forest", note: "Budget-realistic option with PL adaptation already proven." },
+    ],
+  },
+  {
+    name: "Women's Watch List",
+    count: 4,
+    updated: "1 week ago",
+    accentClassName: "border-pink-500/30 bg-pink-500/10 text-pink-300",
+    players: [
+      { name: "Grace Clinton", club: "Man Utd Women", note: "Creative spike showing in key matches." },
+      { name: "Esmee Brugts", club: "Barcelona Femení", note: "Hybrid wide runner profile." },
+      { name: "Vicky Lopez", club: "Barcelona Femení", note: "Development track — one for next cycle." },
+      { name: "Khadija Shaw", club: "Man City Women", note: "Elite output, contract leverage window opens soon." },
+    ],
+  },
+];
+
+const successionScenarios = [
+  {
+    role: "Deep-Lying Playmaker",
+    outgoing: { name: "Casemiro", club: "Man United", contract: "Jun 2026", age: 32, wage: "GBP 350k/wk" },
+    internal: [
+      { name: "Nico Paz", note: "Academy — 1-2 year readiness timeline.", readinessColor: "text-yellow-400" },
+    ],
+    external: [
+      { name: "Martín Zubimendi", club: "Real Sociedad", fee: "EUR 60M", fit: 94, ready: "Immediate", readinessColor: "text-primary" },
+      { name: "Joao Gomes", club: "Wolves", fee: "EUR 35M", fit: 87, ready: "Immediate", readinessColor: "text-primary" },
+    ],
+  },
+  {
+    role: "Inv. Fullback / Left",
+    outgoing: { name: "Luke Shaw", club: "Man United", contract: "Jun 2025", age: 28, wage: "GBP 180k/wk" },
+    internal: [
+      { name: "Tyrell Malacia", note: "Long-term injury return — fitness risk remains.", readinessColor: "text-red-400" },
+    ],
+    external: [
+      { name: "Theo Hernández", club: "AC Milan", fee: "EUR 50M", fit: 91, ready: "Immediate", readinessColor: "text-primary" },
+      { name: "Milos Kerkez", club: "AFC Bournemouth", fee: "EUR 40M", fit: 82, ready: "Immediate", readinessColor: "text-green-400" },
+    ],
+  },
+  {
+    role: "Box Winger / Right",
+    outgoing: { name: "Antony", club: "Man United", contract: "Jun 2027", age: 24, wage: "GBP 200k/wk" },
+    internal: [
+      { name: "Alejandro Garnacho", note: "Strong internal option — promotion path likely.", readinessColor: "text-primary" },
+    ],
+    external: [
+      { name: "Nico Williams", club: "Athletic Bilbao", fee: "EUR 58M", fit: 96, ready: "Immediate", readinessColor: "text-primary" },
+      { name: "Bryan Mbeumo", club: "Brentford", fee: "EUR 45M", fit: 88, ready: "Immediate", readinessColor: "text-green-400" },
+    ],
+  },
+];
+
+const scoutAlerts = [
+  { name: "Joao Neves", trigger: "Contract enters 12-month notice window", urgency: "High", urgencyColor: "text-red-400 border-red-500/30 bg-red-500/10" },
+  { name: "Lamine Yamal", trigger: "Take-on success rate surpassed 3.0 per 90", urgency: "Watch", urgencyColor: "text-yellow-400 border-yellow-500/30 bg-yellow-500/10" },
+  { name: "Grace Clinton", trigger: "Top-5 in progressive carries per 90 this month", urgency: "Rising", urgencyColor: "text-primary border-primary/30 bg-primary/10" },
+];
+
+const marketMovers = [
+  { name: "Lamine Yamal", club: "Barcelona", shift: "+EUR 12M", color: "text-primary" },
+  { name: "Nico Williams", club: "Athletic", shift: "+EUR 8M", color: "text-primary" },
+  { name: "Antony", club: "Man United", shift: "−EUR 18M", color: "text-red-400" },
+  { name: "Khadija Shaw", club: "Man City W.", shift: "+EUR 3M", color: "text-pink-300" },
+];
+
 export default function ScoutWorkspace() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("search");
+  const [roleFilter, setRoleFilter] = useState("inverted-fb");
+  const [contractFilter, setContractFilter] = useState("under-12");
+  const [metricFilter, setMetricFilter] = useState("prog-passes");
+  const [leagueFilter, setLeagueFilter] = useState("all");
+
+  const tabs = [
+    { id: "search", label: t("Global Search") },
+    { id: "shortlists", label: t("My Shortlists") },
+    { id: "succession", label: t("Succession Planning") },
+  ];
 
   return (
-    <div className="p-6 lg:p-8 space-y-6 pb-20">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="app-page">
+      <div className="app-hero">
         <div>
-          <h1 className="text-3xl font-display font-bold tracking-tight text-white mb-1 flex items-center gap-3">
-            <Database className="w-8 h-8 text-primary" /> Scout Workspace
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <Badge className="border-primary/20 bg-primary/10 text-primary">Scout Workspace</Badge>
+            <Badge variant="outline" className="border-white/10 bg-black/20 text-muted-foreground">
+              {t("Demo")}
+            </Badge>
+          </div>
+          <h1 className="mb-1 flex items-center gap-3 text-3xl font-display font-bold tracking-tight text-white">
+            <Database className="h-8 w-8 text-primary" /> Scout Workspace
           </h1>
-          <p className="text-muted-foreground">Advanced search, shortlists, and succession planning.</p>
+          <p className="max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
+            Scouting workflow concept: search, shortlists, and succession planning in one workspace.
+            All results are structured mock data — real player database and alerts API come later.
+          </p>
         </div>
-        <div className="flex gap-2">
-           <Button variant="outline" className="border-primary/50 text-primary">
-             <Save className="w-4 h-4 mr-2" /> Save Filter
-           </Button>
-           <Button variant="default">
-             <Plus className="w-4 h-4 mr-2" /> New Shortlist
-           </Button>
+        <div className="flex shrink-0 gap-2">
+          <Button variant="outline" className="border-primary/50 text-primary">
+            <Save className="mr-2 h-4 w-4" /> {t("Save Filter")}
+          </Button>
+          <Button variant="default">
+            <Plus className="mr-2 h-4 w-4" /> {t("New Shortlist")}
+          </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Sidebar for Filters */}
-        <Card className="glass-card bg-card/40 border-white/10 lg:col-span-1 h-fit">
-          <CardHeader className="p-4 border-b border-white/5 bg-black/20">
-            <CardTitle className="text-sm font-display flex items-center gap-2">
-              <Filter className="w-4 h-4 text-primary" /> Advanced Filters
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 space-y-4">
-             <div className="space-y-2">
-               <label className="text-xs font-semibold text-muted-foreground uppercase">Role / Position</label>
-               <select className="w-full bg-black/40 border border-white/10 rounded-md p-2 text-sm text-white">
-                 <option>Inverted Fullback</option>
-                 <option>Box-to-Box Midfielder</option>
-                 <option>False 9</option>
-                 <option>Sweeper Keeper</option>
-               </select>
-             </div>
-             
-             <div className="space-y-2">
-               <label className="text-xs font-semibold text-muted-foreground uppercase">Age Range</label>
-               <div className="flex items-center gap-2">
-                 <Input type="number" placeholder="16" className="bg-black/40 border-white/10" />
-                 <span className="text-muted-foreground">-</span>
-                 <Input type="number" placeholder="23" className="bg-black/40 border-white/10" />
-               </div>
-             </div>
+      <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+        <div className="space-y-5">
+          <Card className="glass-card rounded-[28px] border-white/8 bg-card/40 shadow-lg shadow-black/20">
+            <CardHeader className="border-b border-white/6 p-4">
+              <CardTitle className="flex items-center gap-2 text-sm font-display">
+                <Filter className="h-4 w-4 text-primary" /> {t("Advanced Filters")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 p-4">
+              <div className="space-y-2">
+                <label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  {t("Role / Position")}
+                </label>
+                <Select value={roleFilter} onValueChange={setRoleFilter}>
+                  <SelectTrigger className="w-full border-white/10 bg-card/60 text-white focus:ring-primary/50">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="inverted-fb">Inverted Fullback</SelectItem>
+                    <SelectItem value="box-to-box">Box-to-Box Midfielder</SelectItem>
+                    <SelectItem value="false-9">False 9</SelectItem>
+                    <SelectItem value="sweeper-keeper">Sweeper Keeper</SelectItem>
+                    <SelectItem value="destroyer-6">Destroyer 6</SelectItem>
+                    <SelectItem value="inv-winger">Inverted Winger</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-             <div className="space-y-2">
-               <label className="text-xs font-semibold text-muted-foreground uppercase">Contract Expiry</label>
-               <select className="w-full bg-black/40 border border-white/10 rounded-md p-2 text-sm text-white">
-                 <option>Under 12 months</option>
-                 <option>1-2 years</option>
-                 <option>3+ years</option>
-               </select>
-             </div>
-
-             <div className="space-y-2">
-               <label className="text-xs font-semibold text-muted-foreground uppercase">Key Metric (Per 90)</label>
-               <select className="w-full bg-black/40 border border-white/10 rounded-md p-2 text-sm text-white mb-2">
-                 <option>Progressive Passes {'>'} 5.0</option>
-                 <option>Successful Take-ons {'>'} 2.5</option>
-                 <option>Interceptions {'>'} 1.5</option>
-               </select>
-             </div>
-             
-             <Button className="w-full mt-4" variant="secondary">Apply Filters</Button>
-          </CardContent>
-        </Card>
-
-        {/* Main Content Area */}
-        <div className="lg:col-span-3 space-y-6">
-           <div className="flex gap-4 border-b border-white/10 pb-2">
-              <button 
-                className={`text-sm font-semibold pb-2 border-b-2 transition-colors ${activeTab === 'search' ? 'border-primary text-white' : 'border-transparent text-muted-foreground hover:text-white'}`}
-                onClick={() => setActiveTab('search')}
-              >
-                Global Search
-              </button>
-              <button 
-                className={`text-sm font-semibold pb-2 border-b-2 transition-colors ${activeTab === 'shortlists' ? 'border-primary text-white' : 'border-transparent text-muted-foreground hover:text-white'}`}
-                onClick={() => setActiveTab('shortlists')}
-              >
-                My Shortlists
-              </button>
-              <button 
-                className={`text-sm font-semibold pb-2 border-b-2 transition-colors ${activeTab === 'succession' ? 'border-primary text-white' : 'border-transparent text-muted-foreground hover:text-white'}`}
-                onClick={() => setActiveTab('succession')}
-              >
-                Succession Planning
-              </button>
-           </div>
-
-           {activeTab === 'search' && (
-             <div className="space-y-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input placeholder="Search database of 150,000+ players..." className="pl-10 bg-black/40 border-white/10 w-full" />
+              <div className="space-y-2">
+                <label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  {t("Age Range")}
+                </label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    placeholder="16"
+                    className="border-white/10 bg-card/60 [appearance:textfield] focus-visible:ring-primary/50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  />
+                  <span className="shrink-0 text-muted-foreground">—</span>
+                  <Input
+                    type="number"
+                    placeholder="26"
+                    className="border-white/10 bg-card/60 [appearance:textfield] focus-visible:ring-primary/50 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  />
                 </div>
-                
-                <div className="grid grid-cols-1 gap-3">
-                  {[
-                    { name: "Joao Neves", club: "Benfica", role: "Box-to-Box", match: "98%" },
-                    { name: "Warren Zaire-Emery", club: "PSG", role: "Box-to-Box", match: "94%" },
-                    { name: "Arthur Vermeeren", club: "Atletico", role: "Deep Lying", match: "89%" }
-                  ].map((p, i) => (
-                    <Card key={i} className="bg-card/20 border-white/5 hover:bg-card/40 transition-colors cursor-pointer">
-                      <CardContent className="p-4 flex items-center justify-between">
-                         <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center font-bold text-primary">
-                              {p.name.charAt(0)}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  {t("Contract Expiry")}
+                </label>
+                <Select value={contractFilter} onValueChange={setContractFilter}>
+                  <SelectTrigger className="w-full border-white/10 bg-card/60 text-white focus:ring-primary/50">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="under-12">Under 12 months</SelectItem>
+                    <SelectItem value="1-2-years">1–2 years</SelectItem>
+                    <SelectItem value="3-plus">3+ years</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  League
+                </label>
+                <Select value={leagueFilter} onValueChange={setLeagueFilter}>
+                  <SelectTrigger className="w-full border-white/10 bg-card/60 text-white focus:ring-primary/50">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Leagues</SelectItem>
+                    <SelectItem value="epl">Premier League</SelectItem>
+                    <SelectItem value="laliga">La Liga</SelectItem>
+                    <SelectItem value="bundesliga">Bundesliga</SelectItem>
+                    <SelectItem value="serie-a">Serie A</SelectItem>
+                    <SelectItem value="liga-f">Liga F (Women's)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  {t("Key Metric (Per 90)")}
+                </label>
+                <Select value={metricFilter} onValueChange={setMetricFilter}>
+                  <SelectTrigger className="w-full border-white/10 bg-card/60 text-white focus:ring-primary/50">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="prog-passes">Progressive Passes &gt; 5.0</SelectItem>
+                    <SelectItem value="take-ons">Successful Take-ons &gt; 2.5</SelectItem>
+                    <SelectItem value="interceptions">Interceptions &gt; 1.5</SelectItem>
+                    <SelectItem value="carries">Progressive Carries &gt; 4.0</SelectItem>
+                    <SelectItem value="pressures">Pressures &gt; 20</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Button className="mt-2 w-full" variant="secondary">
+                {t("Apply Filters")}
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card rounded-[28px] border-white/8 bg-card/40 shadow-lg shadow-black/20">
+            <CardHeader className="border-b border-white/6 p-4">
+              <div className="flex items-center gap-2">
+                <Bell className="h-4 w-4 text-primary" />
+                <CardTitle className="text-sm font-display">{t("Scout Alerts")}</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3 p-4">
+              {scoutAlerts.map((alert) => (
+                <div
+                  key={alert.name}
+                  className={`rounded-2xl border p-3 ${alert.urgencyColor}`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-semibold text-white">{alert.name}</span>
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${alert.urgencyColor.split(" ")[0]}`}>
+                      {alert.urgency}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">{alert.trigger}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className="glass-card rounded-[28px] border-white/8 bg-card/40 shadow-lg shadow-black/20">
+            <CardHeader className="border-b border-white/6 p-4">
+              <div className="flex items-center gap-2">
+                <BarChart2 className="h-4 w-4 text-blue-400" />
+                <CardTitle className="text-sm font-display">{t("Market movers")}</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-2 p-4">
+              {marketMovers.map((m) => (
+                <div key={m.name} className="flex items-center justify-between rounded-xl border border-white/8 bg-black/20 px-3 py-2.5">
+                  <div>
+                    <div className="text-sm font-medium text-white">{m.name}</div>
+                    <div className="text-xs uppercase tracking-[0.12em] text-muted-foreground">{m.club}</div>
+                  </div>
+                  <span className={`text-sm font-bold ${m.color}`}>{m.shift}</span>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-5">
+          <div className="flex gap-1 rounded-2xl border border-white/8 bg-card/40 p-1.5">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
+                  activeTab === tab.id
+                    ? "bg-primary text-black"
+                    : "text-muted-foreground hover:text-white"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {activeTab === "search" && (
+            <div className="space-y-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Search the prototype scouting pool..."
+                  className="w-full border-white/10 bg-black/40 pl-10"
+                />
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="cursor-pointer border-white/10 hover:bg-white/5">All roles</Badge>
+                <Badge className="cursor-pointer bg-primary/10 text-primary">Box-to-Box</Badge>
+                <Badge variant="outline" className="cursor-pointer border-white/10 hover:bg-white/5">Winger</Badge>
+                <Badge variant="outline" className="cursor-pointer border-white/10 hover:bg-white/5">Defender</Badge>
+                <Badge variant="outline" className="cursor-pointer border-pink-500/20 bg-pink-500/5 text-pink-300">Women's</Badge>
+              </div>
+
+              <div className="space-y-3">
+                {searchResults.map((p, i) => (
+                  <Card
+                    key={i}
+                    className="cursor-pointer rounded-[24px] border-white/8 bg-card/30 transition-colors hover:bg-card/60"
+                  >
+                    <CardContent className="flex items-center justify-between gap-4 p-4">
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-primary/20 font-bold text-primary">
+                          {p.name.charAt(0)}
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-white">{p.name}</h3>
+                          <p className="text-xs text-muted-foreground">
+                            {p.club} · {p.nation} · {p.age}yo · {p.role}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-4">
+                        <div className="hidden text-right sm:block">
+                          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("Contract")}</div>
+                          <div className="text-sm font-medium text-white">{p.contract}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("Style Match")}</div>
+                          <div className={`text-lg font-bold ${p.matchColor}`}>{p.match}%</div>
+                        </div>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <BookmarkPlus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-3">
+                {[
+                  { label: "Total results", value: "7", note: "Filtered from 38k+ profiles" },
+                  { label: "High priority", value: "3", note: "Match ≥ 90% style fit" },
+                  { label: "Women's included", value: "2", note: "Same pool, same weight" },
+                ].map((stat) => (
+                  <div
+                    key={stat.label}
+                    className="rounded-[22px] border border-white/8 bg-card/40 p-4"
+                  >
+                    <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{stat.label}</div>
+                    <div className="mt-2 text-2xl font-display font-bold text-white">{stat.value}</div>
+                    <div className="mt-1 text-xs text-muted-foreground">{stat.note}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === "shortlists" && (
+            <div className="space-y-6">
+              {shortlists.map((list) => (
+                <Card
+                  key={list.name}
+                  className="glass-card rounded-[28px] border-white/8 bg-card/40 shadow-lg shadow-black/20"
+                >
+                  <CardHeader className="border-b border-white/6 pb-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <Star className="h-4 w-4 text-primary" />
+                        <CardTitle className="text-base font-display text-white">{list.name}</CardTitle>
+                        <Badge className={`text-xs ${list.accentClassName}`}>{list.count} players</Badge>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Clock className="h-3.5 w-3.5" />
+                        {list.updated}
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3 pt-5">
+                    {list.players.map((p) => (
+                      <div
+                        key={p.name}
+                        className="flex items-start justify-between gap-4 rounded-2xl border border-white/8 bg-black/20 p-4"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 font-bold text-sm text-white">
+                            {p.name.charAt(0)}
+                          </div>
+                          <div>
+                            <div className="font-semibold text-white">{p.name}</div>
+                            <div className="text-xs uppercase tracking-[0.12em] text-muted-foreground">{p.club}</div>
+                            <div className="mt-1 text-xs leading-5 text-muted-foreground">{p.note}</div>
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0">
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button variant="outline" className="w-full rounded-xl border-dashed border-white/15 text-muted-foreground hover:text-white">
+                      <Plus className="mr-2 h-4 w-4" /> Add player to list
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {activeTab === "succession" && (
+            <div className="space-y-6">
+              {successionScenarios.map((scenario) => (
+                <Card
+                  key={scenario.role}
+                  className="glass-card rounded-[28px] border-white/8 bg-card/40 shadow-lg shadow-black/20"
+                >
+                  <CardHeader className="border-b border-white/6 pb-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <div className="mb-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                          {t("Succession scenario")}
+                        </div>
+                        <CardTitle className="text-lg font-display text-white">
+                          {scenario.role} — Replace {scenario.outgoing.name}
+                        </CardTitle>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant="outline" className="border-white/10 bg-black/20 text-muted-foreground text-[10px]">
+                          Age {scenario.outgoing.age}
+                        </Badge>
+                        <Badge variant="outline" className="border-red-500/20 bg-red-500/10 text-red-300 text-[10px]">
+                          Contract {scenario.outgoing.contract}
+                        </Badge>
+                        <Badge variant="outline" className="border-yellow-500/20 bg-yellow-500/10 text-yellow-300 text-[10px]">
+                          {scenario.outgoing.wage}
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-5 pt-5">
+                    <div>
+                      <div className="mb-3 flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                        <Users className="h-3.5 w-3.5" /> {t("Internal options")}
+                      </div>
+                      {scenario.internal.map((opt) => (
+                        <div
+                          key={opt.name}
+                          className="flex items-center justify-between rounded-2xl border border-white/8 bg-black/20 p-4"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-sm font-bold text-white">
+                              {opt.name.charAt(0)}
                             </div>
                             <div>
-                              <h3 className="font-bold text-white">{p.name}</h3>
-                              <p className="text-xs text-muted-foreground">{p.club} • {p.role}</p>
+                              <div className="font-semibold text-white">{opt.name}</div>
+                              <div className="text-xs text-muted-foreground">{opt.note}</div>
                             </div>
-                         </div>
-                         <div className="flex items-center gap-4">
-                            <div className="text-right">
-                              <div className="text-xs text-muted-foreground">Style Match</div>
-                              <div className="font-bold text-green-400">{p.match}</div>
-                            </div>
-                            <Button variant="ghost" size="icon"><BookmarkPlus className="w-4 h-4" /></Button>
-                         </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-             </div>
-           )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
 
-           {activeTab === 'succession' && (
-             <Card className="bg-card/20 border-white/5">
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-bold mb-4">Target: Replace Casemiro</h3>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground mb-8">
-                     <span className="bg-black/50 px-3 py-1 rounded-full">Contract expires: 2025</span>
-                     <span className="bg-black/50 px-3 py-1 rounded-full">Role: Deep-Lying Playmaker</span>
-                  </div>
-                  
-                  <div className="space-y-6">
                     <div>
-                      <h4 className="text-xs uppercase tracking-wider text-muted-foreground mb-3">Internal Options</h4>
-                      <div className="p-4 border border-white/10 rounded-lg bg-black/20 flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                           <div className="w-8 h-8 rounded-full bg-white/10" />
-                           <span>Nico Paz <Badge variant="secondary" className="ml-2">Academy</Badge></span>
-                        </div>
-                        <span className="text-yellow-500 text-sm">Readiness: 1-2 Years</span>
+                      <div className="mb-3 flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                        <Target className="h-3.5 w-3.5" /> {t("Market targets")}
+                      </div>
+                      <div className="space-y-3">
+                        {scenario.external.map((opt) => (
+                          <div
+                            key={opt.name}
+                            className="flex items-center justify-between gap-4 rounded-2xl border border-primary/15 bg-primary/6 p-4"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/20 font-bold text-primary">
+                                {opt.name.charAt(0)}
+                              </div>
+                              <div>
+                                <div className="font-semibold text-white">{opt.name}</div>
+                                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                                  <span>{opt.club}</span>
+                                  <span>·</span>
+                                  <span>{opt.fee}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3 text-right">
+                              <div>
+                                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Fit</div>
+                                <div className="font-bold text-primary">{opt.fit}%</div>
+                              </div>
+                              <div>
+                                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Ready</div>
+                                <div className={`text-sm font-semibold ${opt.readinessColor}`}>{opt.ready}</div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                    
-                    <div>
-                      <h4 className="text-xs uppercase tracking-wider text-muted-foreground mb-3">Market Targets</h4>
-                      <div className="p-4 border border-white/10 rounded-lg bg-black/20 flex justify-between items-center mb-2">
-                        <div className="flex items-center gap-3">
-                           <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold">Z</div>
-                           <span>Martín Zubimendi <Badge className="ml-2 bg-blue-500/20 text-blue-400">High Priority</Badge></span>
-                        </div>
-                        <span className="text-green-400 text-sm">Readiness: Immediate</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-             </Card>
-           )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

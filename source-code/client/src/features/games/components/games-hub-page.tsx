@@ -47,6 +47,17 @@ const gameCards = [
     accentClassName: "border-amber-500/18",
     ctaLabel: "Preview Challenges",
   },
+  {
+    title: "Director Mode",
+    description:
+      "Build and manage a real squad from scratch. Map your formation, scout transfer targets, model the budget window, and plan the rebuild.",
+    href: "/games/director-mode",
+    status: "Beta",
+    eyebrow: "Squad Builder",
+    bullets: ["Formation planner", "Transfer target board", "Budget model"],
+    accentClassName: "border-emerald-500/18",
+    ctaLabel: "Enter Director Mode",
+  },
 ];
 
 export function GamesHubPage() {

@@ -1,0 +1,25 @@
+{
+  "mode": "mobile",
+  "route": "/games/market-xi",
+  "url": "http://127.0.0.1:5005/games/market-xi",
+  "loadingVisible": false,
+  "containsLoadingText": false,
+  "consoleMessages": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting..."
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected."
+    },
+    {
+      "type": "info",
+      "text": "🌐 i18next is maintained with support from Locize — consider powering your project with managed localization (AI, CDN, integrations): https://locize.com 💙"
+    }
+  ],
+  "pageErrors": [],
+  "requestFailures": [],
+  "badResponses": [],
+  "screenshotPath": "/Users/mac/Desktop/BALDONTLIE/DOCUMENTATION_AND_RESEARCH/assets/screenshots/mobile-bug/market-xi-mobile.png"
+}

@@ -123,7 +123,7 @@ export default function MarketXIPage() {
     : 0;
 
   return (
-    <div className="space-y-8 p-6 pb-20 lg:p-8">
+    <div className="app-page">
       <MarketHero
         totalMarketVolume={heroStats.totalMarketVolume}
         activeTraders={heroStats.activeTraders}
@@ -134,7 +134,7 @@ export default function MarketXIPage() {
         onExplainPrice={() => setIsPriceExplanationOpen(true)}
       />
 
-      <div className="grid gap-4 xl:grid-cols-6">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
         {overviewStats.map((stat) => (
           <MarketOverviewCard key={stat.id} stat={stat} />
         ))}
@@ -145,7 +145,7 @@ export default function MarketXIPage() {
         onValueChange={(value) => setActiveTab(value as MarketTabKey)}
         className="space-y-6"
       >
-        <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <MarketTabs />
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <LineChart className="w-4 h-4 text-primary" />
@@ -168,7 +168,7 @@ export default function MarketXIPage() {
             onReset={resetFilters}
           />
 
-          <div className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_380px]">
+          <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px] 2xl:grid-cols-[minmax(0,1fr)_380px]">
             <div className="space-y-5">
               {isLoading ? (
                 <div className="grid gap-5 xl:grid-cols-2">
@@ -286,7 +286,7 @@ export default function MarketXIPage() {
         </TabsContent>
 
         <TabsContent value="learn" className="space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-[28px] border border-white/8 bg-card/40 p-5">
+          <div className="flex flex-col items-start justify-between gap-4 rounded-[28px] border border-white/8 bg-card/40 p-5 sm:flex-row sm:items-center">
             <div>
               <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
                 <BookOpen className="w-4 h-4 text-primary" />
@@ -296,7 +296,7 @@ export default function MarketXIPage() {
                 Learn what actually moves a football asset
               </h2>
             </div>
-            <Button className="rounded-2xl" onClick={() => setIsPriceExplanationOpen(true)}>
+            <Button className="w-full rounded-2xl sm:w-auto" onClick={() => setIsPriceExplanationOpen(true)}>
               Open price estimator
             </Button>
           </div>

@@ -1,64 +1,99 @@
 # BALDONTLIE
 
-Premium football intelligence frontend with scouting, player discovery, transfers, predictions, social features, and a dedicated Games section led by `Market XI`.
+BALDONTLIE is a football intelligence product prototype built around a React + Vite frontend with an Express server wrapper in `source-code/`.
 
-## Repo Layout
+## Start Here
 
-The working application lives in `source-code/`.
+Primary working path:
 
-Important paths:
+- `DOCUMENTATION_AND_RESEARCH/README.md`
 
-- `source-code/client/` - React + Vite frontend
-- `source-code/server/` - Express server for dev and production serving
-- `source-code/shared/` - shared schema and cross-cutting code
-- `REPO_OVERVIEW.md` - detailed audit and structure document
+First-session handoff:
 
-## Current Status
+- `DOCUMENTATION_AND_RESEARCH/DEV_START_HERE.md`
 
-This repository is frontend-heavy and mock-data-driven right now.
+Working conventions:
 
-What is in place:
+- `DOCUMENTATION_AND_RESEARCH/WORKING_CONVENTIONS.md`
 
-- premium dark football UI
-- multi-page product shell
-- dashboard, players, transfers, predictions, rankings, and other football product screens
-- new `Games` section
-- fully designed `Market XI` frontend simulation
+Writing and commit style:
 
-What is not in place yet:
+- `DOCUMENTATION_AND_RESEARCH/research/MOYOSOREJOBI_STYLE.md`
 
-- real backend APIs
-- persistent database-backed product behavior
-- full auth flow
-- tests and linting
+Live execution log:
 
-## Local Development
+- `DOCUMENTATION_AND_RESEARCH/PROGRESS.md`
 
-From `source-code/`:
+Exact current-state repo reference:
+
+- `DOCUMENTATION_AND_RESEARCH/REPO_OVERVIEW.md`
+
+## Working Areas
+
+Main product app:
+
+- `source-code/`
+
+Standalone frontend demo:
+
+- `frontend-demo/`
+
+Documentation and research:
+
+- `DOCUMENTATION_AND_RESEARCH/`
+
+## Canonical Docs
+
+The aligned production planning docs are:
+
+- `DOCUMENTATION_AND_RESEARCH/BALDONTLIE_PRODUCTION_PLAN.md`
+- `DOCUMENTATION_AND_RESEARCH/BALDONTLIE_PRODUCTION_CHECKLIST.md`
+- `DOCUMENTATION_AND_RESEARCH/WORKING_CONVENTIONS.md`
+- `DOCUMENTATION_AND_RESEARCH/PROGRESS.md`
+- `DOCUMENTATION_AND_RESEARCH/PRODUCTION_RELEASE_RUNBOOK.md`
+
+Repo overview:
+
+- `DOCUMENTATION_AND_RESEARCH/REPO_OVERVIEW.md`
+
+Task template:
+
+- `DOCUMENTATION_AND_RESEARCH/TASK_EXECUTION_TEMPLATE.md`
+
+Visual reference:
+
+- `DOCUMENTATION_AND_RESEARCH/FRONTEND_VISUAL_REFERENCE.md`
+
+## Quick Commands
+
+Repo-level helpers:
 
 ```bash
-npm install
+npm run bootstrap
+npm run check
+npm run build
+npm run sync:demo
+```
+
+Main app:
+
+```bash
 npm run dev
 ```
 
-The app has recently been running locally at:
+If port `5000` is already occupied locally, run the main app from `source-code/` with a safe override such as `PORT=5004 npm run dev`.
 
-```text
-http://127.0.0.1:5050
+Standalone demo:
+
+```bash
+npm run dev:demo
 ```
 
-## Scripts
+Repo conventions:
 
-From `source-code/package.json`:
-
-- `npm run dev`
-- `npm run build`
-- `npm run start`
-- `npm run check`
-- `npm run db:push`
-
-## Documentation
-
-For a more detailed explanation of the repo structure, strengths, weaknesses, and current state, see:
-
-- `REPO_OVERVIEW.md`
+- make implementation changes in `source-code/` first
+- sync `frontend-demo/` only when a frontend change should also be demo-ready
+- prefer the root `npm run ...` helpers for validation and demo sync
+- update `DOCUMENTATION_AND_RESEARCH/PROGRESS.md` after every meaningful change batch
+- treat `DOCUMENTATION_AND_RESEARCH/PROGRESS.md` as append-only history
+- treat `DOCUMENTATION_AND_RESEARCH/REPO_OVERVIEW.md` as the exact current-state repo map

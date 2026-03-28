@@ -1,2 +1,43 @@
-.DS_Store
+# OS noise
+**/.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Node dependencies and build output
+**/node_modules/
+**/dist/
+**/build/
+**/.cache/
+**/.vite/
+**/coverage/
+
+# Environment and secrets
+.env
+.env.*
+**/.env
+**/.env.*
+!**/.env.example
+
+# Editor / IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+*.temp
+*.tsbuildinfo
+*.bak
+
+# Legacy archived planning artifacts
 football_platform_master_plan.docx
+
+# Zip archives
+*.zip
+
+# Generated translation source files
+source-strings.json

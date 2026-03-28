@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { localeCatalog, LANGUAGE_STORAGE_KEY, getLocaleMeta, type LocaleMeta } from "@/locales/config";
 import {
   Activity,
   BarChart2,
@@ -25,7 +26,8 @@ import {
   Palette,
   Database,
   BrainCircuit,
-  GraduationCap
+  GraduationCap,
+  Compass
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -88,21 +90,15 @@ const gamesItems = [
   { title: "Prediction Arena", url: "/games/prediction-arena", icon: Target },
   { title: "Fantasy Drafts", url: "/games/fantasy-drafts", icon: Users },
   { title: "Challenges", url: "/games/challenges", icon: Trophy },
+  { title: "Director Mode", url: "/games/director-mode", icon: Compass },
 ];
 
 const mySpaceItems = [
   { title: "My Shortlist", url: "/my-player", icon: Star },
 ];
 
-const languages = [
-  { code: "en", name: "English", dir: "ltr" },
-  { code: "pt", name: "Português", dir: "ltr" },
-  { code: "fr", name: "Français", dir: "ltr" },
-  { code: "es", name: "Español", dir: "ltr" },
-  { code: "ar", name: "العربية", dir: "rtl" },
-  { code: "ja", name: "日本語", dir: "ltr" },
-  { code: "yo", name: "Yorùbá", dir: "ltr" },
-];
+// Language list sourced from localeCatalog — single source of truth
+const languages = localeCatalog;
 
 const themes = [
   { id: "default", name: "Default Dark" },
@@ -198,8 +194,8 @@ function TopNav({
   currentTheme,
   setTheme,
 }: {
-  currentLang: any;
-  setLang: (l: any) => void;
+  currentLang: LocaleMeta;
+  setLang: (l: LocaleMeta) => void;
   currentTheme: string;
   setTheme: (t: string) => void;
 }) {
@@ -210,13 +206,11 @@ function TopNav({
 
   if (location === "/") return null;
 
-  const handleLanguageChange = (lang: any) => {
+  const handleLanguageChange = (lang: LocaleMeta) => {
     setLang(lang);
+    // i18n.changeLanguage triggers the languageChanged event in i18n.ts
+    // which updates document.documentElement.dir and lang automatically
     i18n.changeLanguage(lang.code);
-
-    // Set direction explicitly on HTML
-    document.documentElement.dir = lang.dir;
-    document.documentElement.lang = lang.code;
   };
 
   const handleThemeChange = (themeId: string) => {
@@ -326,15 +320,18 @@ function TopNav({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-40 bg-card border-border"
+            className="w-48 bg-card border-border max-h-[320px] overflow-y-auto"
           >
             {languages.map((lang) => (
               <DropdownMenuItem
                 key={lang.code}
-                className={`cursor-pointer ${currentLang.code === lang.code ? "text-primary" : ""}`}
+                className={`cursor-pointer flex items-center gap-2 ${currentLang.code === lang.code ? "text-primary font-bold" : ""}`}
                 onClick={() => handleLanguageChange(lang)}
               >
-                {lang.name}
+                <span>{lang.nativeName}</span>
+                {lang.experimental && (
+                  <span className="text-[10px] text-muted-foreground ml-auto">beta</span>
+                )}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
@@ -358,15 +355,28 @@ function TopNav({
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
-  const [currentLang, setCurrentLang] = useState(languages[0]);
-  const [currentTheme, setCurrentTheme] = useState("default");
   const { i18n } = useTranslation();
 
-  // Apply RTL direction if Arabic
+  // Initialise currentLang from stored preference or i18n.language
+  const [currentLang, setCurrentLang] = useState<LocaleMeta>(() => {
+    const stored = typeof window !== "undefined"
+      ? window.localStorage.getItem(LANGUAGE_STORAGE_KEY)
+      : null;
+    return getLocaleMeta(stored || i18n.language) ?? languages[0];
+  });
+
+  const [currentTheme, setCurrentTheme] = useState("default");
+
+  // Keep currentLang in sync when i18n.language changes from elsewhere
   useEffect(() => {
-    document.documentElement.dir = currentLang.dir;
-    document.documentElement.lang = currentLang.code;
-  }, [currentLang]);
+    const handleChange = (lng: string) => {
+      setCurrentLang(getLocaleMeta(lng) ?? languages[0]);
+    };
+    i18n.on("languageChanged", handleChange);
+    return () => {
+      i18n.off("languageChanged", handleChange);
+    };
+  }, [i18n]);
 
   if (location === "/") {
     return (

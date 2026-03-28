@@ -1,0 +1,18 @@
+{
+  "name": "baldontlie-repo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bootstrap": "npm --prefix source-code install && npm --prefix frontend-demo install",
+    "dev": "npm --prefix source-code run dev",
+    "dev:demo": "npm --prefix frontend-demo run dev",
+    "check": "npm --prefix source-code run check && npm --prefix frontend-demo run check",
+    "check:app": "npm --prefix source-code run check",
+    "check:demo": "npm --prefix frontend-demo run check",
+    "build": "npm --prefix source-code run build && npm --prefix frontend-demo run build",
+    "build:app": "npm --prefix source-code run build",
+    "build:demo": "npm --prefix frontend-demo run build",
+    "sync:demo": "node scripts/sync-frontend-demo.mjs",
+    "clean:os": "node scripts/remove-ds-store.mjs"
+  }
+}
